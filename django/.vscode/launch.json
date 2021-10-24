@@ -1,0 +1,27 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Python: Django",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/webcompose/manage.py",
+      "args": [
+        "runserver"
+      ],
+      "django": true
+    },
+    {
+      "name": "Python: gunicorn",
+      "type": "python",
+      "request": "launch",
+      "cwd": "/home/webcompose/django/webcompose",
+      "program": "/usr/local/bin/gunicorn",
+      "args": [
+        "webcompose.wsgi:application",
+        "--bind=0.0.0.0:8000",
+        "--timeout=300"
+      ],
+    },
+  ]
+}

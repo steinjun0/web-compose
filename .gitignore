@@ -1,0 +1,5 @@
+*.env*
+/postgres
+*.zip
+.DS_Store
+kospi_ohlcv

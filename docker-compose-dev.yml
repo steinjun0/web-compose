@@ -1,0 +1,60 @@
+version: "3.8"
+
+services:
+  nuxt:
+    image: node:14.17
+    volumes:
+      - ./:/home/web-compose
+    ports:
+    - 8001:3000
+    expose:
+      - 3000
+    environment:
+      - HOST=0.0.0.0
+    command: bash -c '
+      cd /home/web-compose/nuxt
+      && npm i
+      && npm run dev'
+  django:
+    image: python:3.8.12-slim-buster
+    volumes:
+      - ./:/home/web-compose
+    ports:
+      - 8000:8000
+    expose:
+      - 8000
+    env_file:
+      - ./.env.dev
+    environment:
+      - HOST=0.0.0.0
+    command:
+      bash -c '
+      cd /home/web-compose/django/
+      && apt-get update && apt-get install -y procps
+      && pip install -r requirement.txt
+      && cd webcompose
+      && python manage.py collectstatic --noinput
+      && gunicorn --bind 0.0.0.0:8000 --reload webcompose.wsgi:application
+      && tail -F /dev/null'
+      # && python manage.py runserver 0.0.0.0:8000
+    depends_on:
+      - postgres
+  postgres:
+    image: postgres:13.0-alpine
+    volumes:
+      - ./postgres:/var/lib/postgresql/data/
+    ports:
+      - 5432:5432
+    env_file:
+      - ./.env.postgres
+
+  nginx:
+    #image: nginx:latest
+    build: ./nginx
+    volumes:
+      - ./:/home/web-compose
+    ports:
+      - 80:80
+    depends_on:
+      - nuxt
+      - django
