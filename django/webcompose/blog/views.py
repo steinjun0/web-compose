@@ -9,6 +9,12 @@ class test(APIView):
     #     return 'hello'
     authentication_classes = []
     permission_classes = []
-
+    
     def get(self, request):
-        return Response('hi', status=status.HTTP_200_OK)
+        # f = open('./temp.py', 'w')
+        # f.write("print('hello')")
+        # f.close()
+        # exec(open('./temp.py').read())
+        from . import temp
+        result = temp.some_func()
+        return Response(result, status=status.HTTP_200_OK)
